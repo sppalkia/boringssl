@@ -874,6 +874,7 @@ class SSLAEADContext {
   // fixed_nonce_ contains any bytes of the nonce that are fixed for all
   // records.
   uint8_t fixed_nonce_[12];
+  uint8_t nonce_[12];
   uint8_t fixed_nonce_len_ = 0, variable_nonce_len_ = 0;
   // version_ is the wire version that should be used with this AEAD.
   uint16_t version_;

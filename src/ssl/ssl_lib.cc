@@ -488,10 +488,7 @@ bool SSL_get_traffic_secrets(const SSL *ssl,
 SymmetricInfo::SymmetricInfo(const SSL *ssl, int direction) {
   SSLAEADContext *aead_ctx = direction == 0 ? ssl->s3->aead_write_ctx.get()
                                             : ssl->s3->aead_read_ctx.get();
-  // this isn't right...
-  iv_ =
-      std::vector<uint8_t>(aead_ctx->fixed_nonce_,
-                           aead_ctx->fixed_nonce_ + aead_ctx->fixed_nonce_len_);
+  iv_ = std::vector<uint8_t>(aead_ctx->nonce_, aead_ctx->nonce_ + 12);
   EVP_AEAD_CTX *ctx = aead_ctx->ctx_.get();
   auto key_len = EVP_AEAD_key_length(ctx->aead);
   // struct aead_aes_gcm_ctx *gcm_ctx = (struct aead_aes_gcm_ctx *)&ctx->state;

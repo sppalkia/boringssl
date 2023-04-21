@@ -299,6 +299,13 @@ bool SSLAEADContext::Open(Span<uint8_t> *out, uint8_t type,
     }
   }
 
+  OPENSSL_memcpy(nonce_, nonce, nonce_len);
+  printf("setting the nonce: ");
+  for (size_t i = 0; i < nonce_len; ++i) {
+    printf("0x%x ", nonce[i]);
+  }
+  printf("\n");
+
   // Decrypt in-place.
   size_t len;
   if (!EVP_AEAD_CTX_open(ctx_.get(), in.data(), &len, in.size(), nonce,
@@ -385,6 +392,13 @@ bool SSLAEADContext::SealScatter(uint8_t *out_prefix, uint8_t *out,
       nonce[i] ^= fixed_nonce_[i];
     }
   }
+
+  OPENSSL_memcpy(nonce_, nonce, nonce_len);
+  printf("setting the nonce with size %lu: ", nonce_len);
+  for (size_t i = 0; i < nonce_len; ++i) {
+    printf("0x%x ", nonce[i]);
+  }
+  printf("\n");
 
   size_t written_suffix_len;
   bool result = !!EVP_AEAD_CTX_seal_scatter(
