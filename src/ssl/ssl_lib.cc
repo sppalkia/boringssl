@@ -141,6 +141,7 @@
 #include <openssl/ssl.h>
 
 #include <algorithm>
+#include <vector>
 
 #include <assert.h>
 #include <limits.h>
@@ -482,6 +483,21 @@ bool SSL_get_traffic_secrets(const SSL *ssl,
       ssl->s3->write_traffic_secret, ssl->s3->write_traffic_secret_len);
 
   return true;
+}
+
+SymmetricInfo::SymmetricInfo(const SSL *ssl, int direction) {
+  SSLAEADContext *aead_ctx = direction == 0 ? ssl->s3->aead_write_ctx.get()
+                                            : ssl->s3->aead_read_ctx.get();
+  // this isn't right...
+  iv_ =
+      std::vector<uint8_t>(aead_ctx->fixed_nonce_,
+                           aead_ctx->fixed_nonce_ + aead_ctx->fixed_nonce_len_);
+  EVP_AEAD_CTX *ctx = aead_ctx->ctx_.get();
+  auto key_len = EVP_AEAD_key_length(ctx->aead);
+  // struct aead_aes_gcm_ctx *gcm_ctx = (struct aead_aes_gcm_ctx *)&ctx->state;
+  // uint8_t* key_bytes = (uint8_t*)gcm_ctx->ks.ks;
+  uint8_t *key_bytes = (uint8_t *)&ctx->state;
+  key_ = std::vector<uint8_t>(key_bytes, key_bytes + key_len);
 }
 
 BSSL_NAMESPACE_END

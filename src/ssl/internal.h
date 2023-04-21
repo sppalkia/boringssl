@@ -860,6 +860,8 @@ class SSLAEADContext {
   bool GetIV(const uint8_t **out_iv, size_t *out_iv_len) const;
 
  private:
+  friend class SymmetricInfo;
+
   // GetAdditionalData returns the additional data, writing into |storage| if
   // necessary.
   Span<const uint8_t> GetAdditionalData(uint8_t storage[13], uint8_t type,

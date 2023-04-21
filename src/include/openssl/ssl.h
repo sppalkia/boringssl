@@ -142,6 +142,8 @@
 #ifndef OPENSSL_HEADER_SSL_H
 #define OPENSSL_HEADER_SSL_H
 
+#include <vector>
+
 #include <openssl/base.h>
 
 #include <openssl/bio.h>
@@ -5420,6 +5422,13 @@ OPENSSL_EXPORT bool SSL_get_traffic_secrets(
     const SSL *ssl, Span<const uint8_t> *out_read_traffic_secret,
     Span<const uint8_t> *out_write_traffic_secret);
 
+class SymmetricInfo {
+ public:
+  SymmetricInfo(const SSL *ssl, int direction);
+
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
+};
 
 BSSL_NAMESPACE_END
 
